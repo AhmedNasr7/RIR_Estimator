@@ -1,0 +1,24 @@
+version: "2.3"
+services:
+    rir_estimator:
+        build:                                                                          
+            context: ./
+            dockerfile: Dockerfile
+        network_mode: "host"
+        environment:
+            - DISPLAY
+            - UID
+
+        runtime: nvidia
+        volumes:
+            - /dev:/dev
+            - /lib/modules:/lib/modules
+            - /tmp/.X11-unix
+            - /run/user/1000/gdm/Xauthority:/root/.Xauthority
+            - ./:/home/workspace
+            # - ./datasets:/home/workspace/ext_datasets
+        privileged: true
+        ipc: host
+        tty: true
+
+
