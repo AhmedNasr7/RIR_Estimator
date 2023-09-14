@@ -9,6 +9,7 @@ class ConvBlock(nn.Module):
         super(ConvBlock, self).__init__()
 
         self.use_bn = use_bn
+        
         # Create a module list of 1D convolutional layers
 
         self.conv1d = nn.Conv1d(in_channels, out_channels, kernel_size, stride=stride, padding=padding) 
