@@ -4,8 +4,8 @@ L_in =  512
 input_channels = 512
 output_channels = 1024
 kernel_size = 256
-stride = 8
-padding = 124
+stride = 4
+padding = 127
 dilation = 1
 
 
@@ -20,12 +20,12 @@ dilation = 1
 # out_padding = 1 # 4
 
 
-L_in_up = 2330
-stride_up  = 1 # 4 
-padding_up = 20
+L_in_up = 128
+stride_up  = 2
+padding_up = 1
 dilation_up = 1
-kernel_size_up = 41
-out_padding =  0
+kernel_size_up = 7
+out_padding =  10
 
 
 ### 

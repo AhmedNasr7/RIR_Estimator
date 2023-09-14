@@ -95,34 +95,34 @@ class Decoder(nn.Module):
                                     out_channels=self.config.channels[0], 
                                     kernel_size=self.config.kernel_sizes[0], \
                                     stride=self.config.strides[0], padding=self.config.paddings[0], \
-                                    output_padding=self.config.output_paddings[0])
+                                    output_padding=self.config.output_paddings[0], dilation=self.config.dilation[0])
         
         self.up_conv_2 = UpConvBlock(in_channels=self.config.channels[0], \
                                     out_channels=self.config.channels[1], 
                                     kernel_size=self.config.kernel_sizes[1], \
                                     stride=self.config.strides[1], padding=self.config.paddings[1], \
-                                    output_padding=self.config.output_paddings[1])
+                                    output_padding=self.config.output_paddings[1], dilation=self.config.dilation[1])
 
  
         self.up_conv_3 = UpConvBlock(in_channels=self.config.channels[1], \
                                     out_channels=self.config.channels[2], 
                                     kernel_size=self.config.kernel_sizes[2], \
                                     stride=self.config.strides[2], padding=self.config.paddings[2], \
-                                    output_padding=self.config.output_paddings[2], dilation=2)
+                                    output_padding=self.config.output_paddings[2], dilation=self.config.dilation[2])
 
  
         self.up_conv_4 = UpConvBlock(in_channels=self.config.channels[2], \
                                     out_channels=self.config.channels[3], 
                                     kernel_size=self.config.kernel_sizes[3], \
                                     stride=self.config.strides[3], padding=self.config.paddings[3], \
-                                    output_padding=self.config.output_paddings[3])
+                                    output_padding=self.config.output_paddings[3], dilation=self.config.dilation[3])
 
  
         self.up_conv_5 = UpConvBlock(in_channels=self.config.channels[3], \
                                     out_channels=self.config.channels[4], 
                                     kernel_size=self.config.kernel_sizes[4], \
                                     stride=self.config.strides[4], padding=self.config.paddings[4], \
-                                    output_padding=self.config.output_paddings[4])
+                                    output_padding=self.config.output_paddings[4], dilation=self.config.dilation[4])
 
         self.last_trConv1d = nn.ConvTranspose1d(in_channels=64, out_channels=1, \
                                                  kernel_size=3, stride=1, padding=1, output_padding=0)
@@ -167,6 +167,22 @@ class RIR_Estimator(nn.Module):
 if __name__ == "__main__":
 
     from configs import EncoderParams, DecoderParams
+
+
+
+    # test_up = UpConvBlock(in_channels=1024, \
+    #                     out_channels=512, \
+    #                     kernel_size=5, \
+    #                     stride=2, \
+    #                     padding=511, \
+    #                     output_padding=1, dilation=1)
+    
+
+    # x = torch.randn(1, 1024, 6390)
+
+    # y = test_up(x)
+
+    # logger.info(f"up conv output shape: {y.shape}")
 
 
     ## Tests

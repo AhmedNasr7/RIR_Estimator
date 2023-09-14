@@ -13,10 +13,14 @@ class SR_Dataset(Dataset):
         self.audio_dir = audio_dir
         self.rir_dir = rir_dir
         self.audio_files = glob(audio_dir + "/*.wav")
-        self.rir_files = glob(rir_dir + "/*.mat")
+        self.rir_files = glob(rir_dir + "/*.npy")
 
         self.audio_files.sort()
         self.rir_files.sort()
+
+        self.fs = 44_100
+
+        self.rir_len = self.fs * 0.25
 
         assert len(self.audio_files) == len(self.mat_files), "Number of audio and mat files must match"
         
@@ -30,13 +34,16 @@ class SR_Dataset(Dataset):
         
         # Load audio data
         audio_data, sr = torchaudio.load(audio_file).float()
+
         
-        # Load mat data using h5py
-        with h5py.File(rir_file, 'r') as f:
-            rir_numpy = np.array(f['data'][:])[-1]  
+        rir_numpy = np.load(rir_file)
+        # # Load mat data using h5py
+        # with h5py.File(rir_file, 'r') as f:
+        #     rir_numpy = np.array(f['data'][:])[-1]  
 
 
         rir_data = torch.from_numpy(rir_numpy).float().unsqueeze(0)
+        
         
         return audio_data, rir_data
 
