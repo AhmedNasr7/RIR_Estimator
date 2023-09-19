@@ -20,7 +20,7 @@ class SR_Dataset(Dataset):
 
         self.rir_len = self.fs * 0.25
 
-        assert len(self.audio_files) == len(self.mat_files), "Number of audio and mat files must match"
+        assert len(self.audio_files) == len(self.rir_files), "Number of audio and mat files must match"
         
     def __len__(self):
         return len(self.audio_files)
@@ -56,7 +56,6 @@ class DataLoaderWrapper:
         self.rir_dir = rir_dir
         self.batch_size = batch_size
 
-
         self.dataset = SR_Dataset(audio_dir=self.audio_dir, rir_dir=self.rir_dir)
 
         # Split dataset into training and validation sets
@@ -71,17 +70,17 @@ class DataLoaderWrapper:
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, drop_last=False, num_workers=4, pin_memory=True)
 
     def val_dataloader(self):
-            return DataLoader(self.val_dataset, batch_size=self.batch_size // 4, shuffle=False, drop_last=False, num_workers=4, pin_memory=True)
+        return DataLoader(self.val_dataset, batch_size=self.batch_size // 4, shuffle=False, drop_last=False, num_workers=4, pin_memory=True)
 
 
 if __name__ == "__main__":
 
     # Usage example:
     audio_dir = '/path/to/audio/files'
-    mat_dir = '/path/to/mat/files'
+    rir_dir = '/path/to/mat/files'
 
 
-    dataset = SR_Dataset(audio_dir, mat_dir)
+    dataset = SR_Dataset(audio_dir, rir_dir)
 
     # Example of how to get a sample
     sample_audio, sample_mat = dataset[0]
