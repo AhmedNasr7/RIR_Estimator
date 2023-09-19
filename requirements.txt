@@ -12,7 +12,6 @@ tensorboardX
 torch
 torchvision 
 torchaudio
-lightning
 easydict
 pyyaml 
 torch 
