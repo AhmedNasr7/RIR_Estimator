@@ -1,10 +1,8 @@
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
 import os
-import h5py
 import numpy as np
 import torchaudio 
-import lightning as L
 from glob import glob
 
 
@@ -51,19 +49,29 @@ class SR_Dataset(Dataset):
 
 
 
-class LitDataModule(L.LightningDataModule):
-    def __init__(self, audio_dir, rir_dir, batch_size=128):
+class DataLoaderWrapper:
+    def __init__(self, audio_dir, rir_dir, train_ratio=0.85, batch_size=128):
         super().__init__()
         self.audio_dir = audio_dir
         self.rir_dir = rir_dir
         self.batch_size = batch_size
-    
-    def setup(self, stage=None):
+
+
         self.dataset = SR_Dataset(audio_dir=self.audio_dir, rir_dir=self.rir_dir)
 
-    def train_dataloader(self):
-        return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, drop_last=False, num_workers=4)
+        # Split dataset into training and validation sets
+        train_size = int(train_ratio * len(self.dataset))
 
+        val_size = len(dataset) - train_size
+
+        self.train_dataset, self.val_dataset = random_split(dataset, [train_size, val_size])
+        
+
+    def train_dataloader(self):
+        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, drop_last=False, num_workers=4, pin_memory=True)
+
+    def val_dataloader(self):
+            return DataLoader(self.val_dataset, batch_size=self.batch_size // 4, shuffle=False, drop_last=False, num_workers=4, pin_memory=True)
 
 
 if __name__ == "__main__":
