@@ -4,7 +4,7 @@ import os
 import numpy as np
 import torchaudio 
 from glob import glob
-
+from loguru import logger
 
 class SR_Dataset(Dataset):
     def __init__(self, audio_dir, rir_dir):
@@ -18,7 +18,8 @@ class SR_Dataset(Dataset):
 
         self.fs = 44_100
 
-        self.rir_len = self.fs * 0.25
+        self.rir_len = int(self.fs * 0.25)
+        logger.debug(f"len of the data sources: {len(self.audio_files)} and {len(self.rir_files)}")
 
         assert len(self.audio_files) == len(self.rir_files), "Number of audio and mat files must match"
         
@@ -31,17 +32,21 @@ class SR_Dataset(Dataset):
 
         
         # Load audio data
-        audio_data, sr = torchaudio.load(audio_file).float()
+        audio_data, sr = torchaudio.load(audio_file)
+
+        audio_data = audio_data.float()[0].unsqueeze(0)
 
         
-        rir_numpy = np.load(rir_file)
+        rir_numpy = np.load(rir_file)[: self.rir_len].T
+
         # # Load mat data using h5py
         # with h5py.File(rir_file, 'r') as f:
         #     rir_numpy = np.array(f['data'][:])[-1]  
 
 
         rir_data = torch.from_numpy(rir_numpy).float().unsqueeze(0)
-        
+        # logger.debug(f"dataset yield shape: audio data: {audio_data.shape}, rir_data: {rir_data.shape}")
+        # exit(0)
         
         return audio_data, rir_data
 
@@ -61,16 +66,16 @@ class DataLoaderWrapper:
         # Split dataset into training and validation sets
         train_size = int(train_ratio * len(self.dataset))
 
-        val_size = len(dataset) - train_size
+        val_size = len(self.dataset) - train_size
 
-        self.train_dataset, self.val_dataset = random_split(dataset, [train_size, val_size])
+        self.train_dataset, self.val_dataset = random_split(self.dataset, [train_size, val_size])
         
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, drop_last=False, num_workers=4, pin_memory=True)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size // 4, shuffle=False, drop_last=False, num_workers=4, pin_memory=True)
+        return DataLoader(self.val_dataset, batch_size=self.batch_size // 2, shuffle=False, drop_last=False, num_workers=4, pin_memory=True)
 
 
 if __name__ == "__main__":

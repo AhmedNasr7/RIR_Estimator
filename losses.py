@@ -19,7 +19,7 @@ class EDR_Loss(nn.Module):
                             center=True,
                             pad_mode="reflect",
                             power=2.0,
-                        )
+                        ).to(torch.device('cuda'))
 
     def forward(self, x, y):
         # Compute STFT of the input signals
